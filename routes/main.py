@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify
 import requests
-from models import get_cursor
 #A blueprint is a way to declarate the endpoints
 main_bp = Blueprint("main", __name__)
 
@@ -35,9 +34,9 @@ def search_products_amazon():
         if 'search_results' in data:
             for product in data['search_results']:
                 results.append({
-                    'titulo': product.get('title'),
-                    'precio': product.get('price', {}).get('value'),
-                    'moneda': product.get('price', {}).get('currency'),
+                    'title': product.get('title'),
+                    'price': product.get('price', {}).get('value'),
+                    'type': product.get('price', {}).get('currency'),
                     'url': product.get('link'),
                     'imagen': product.get('image')
                 })
