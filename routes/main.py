@@ -1,54 +1,71 @@
 from flask import Blueprint, render_template, request, jsonify
 import requests
-#A blueprint is a way to declarate the endpoints
+import config
+from googletrans import Translator
+
+# A blueprint is a way to declare the endpoints
 main_bp = Blueprint("main", __name__)
 
-RAIN_FOREST_KEY = ""
+# It initializes the translator
+translator = Translator()
 
 @main_bp.route('/')
 def index():
     return render_template('main_page.html')
 
-@main_bp.route('/search_products_amazon')
+@main_bp.route('/search_ingredient')
 def search_products_amazon():
-    search = request.args.get('q',default='')
-    domain = 'amazon.com'
-    page = request.args.get('page', default=1,type=int)
+    PRODUCT = request.args.get('q', default='')
 
-    if search:
-        params_search = {
-            "api_key": RAIN_FOREST_KEY,
-            "type": "search",
-            "amazon_domain": domain,
-            "search_term": search,
-            "page": page
-        }
-    try:
-        response = requests.get(response = requests.get('https://api.rainforestapi.com/request', params=params_search))
-        response.raise_for_status()
+    # It verifies if a product was given
+    if PRODUCT:
+        url = f"https://api.mercadolibre.com/sites/MLM/search?q={PRODUCT}&category=MLM1403&limit=10"
+        headers = {"Authorization": f"Bearer {config.ML_ACCESS_TOKEN}"}
+        try:
+            print(f"Making request to: {url}")  # depuration: it prints the url
+            response = requests.get(url, headers=headers)
 
-        data = response.json()
+            # it verifies if the status is correct
+            if response.status_code == 200:
+                data = response.json()
 
-        results = []
+                # It stores the information
+                results = []
+                for product in data.get("results", []):
 
-        if 'search_results' in data:
-            for product in data['search_results']:
-                results.append({
-                    'title': product.get('title'),
-                    'price': product.get('price', {}).get('value'),
-                    'type': product.get('price', {}).get('currency'),
-                    'url': product.get('link'),
-                    'imagen': product.get('image')
+                    # It translates the title to english
+                    translated_title = translator.translate(product.get('title', 'N/A'), src='es', dest='en').text
+
+                    #It creates a dictionary for adding to the results
+                    results.append({
+                        'title': translated_title,
+                        'price': product.get('price', 'N/A'),
+                        'seller': product.get('seller', 'N/A').get('nickname'),
+                        'link': product.get('permalink', 'N/A') ,
+                        'image': product.get('thumbnail', '')
+                    })
+
+                # it returns the results
+                return jsonify({
+                    'status': 'success',
+                    'results': results,
+                    'total_results': len(results)
                 })
+            else:
+                print(f"Error in the answer: {response.status_code}")  # Depuration
+                return jsonify({
+                    'status': 'error',
+                    'message': f"Error in getting the data. Status code: {response.status_code}"
+                }), 500
+        except requests.exceptions.RequestException as e:
+            # If there is an exception
+            print(f"Request error: {str(e)}")  # Depuration
+            return jsonify({
+                'status': 'error',
+                'message': str(e)
+            }), 500
 
-        return jsonify({
-            'status': 'success',
-            'results': results,
-            'total_resultados': len(results)
-        })
-    except requests.exceptions.RequestException as e:
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
-    
+    return jsonify({
+        'status': 'error',
+        'message': 'A product was not given.'
+    }), 400

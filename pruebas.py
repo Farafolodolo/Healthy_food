@@ -4,7 +4,7 @@ from googletrans import Translator
 
 # Función asíncrona para traducir un título
 async def translate_title(translator, title):
-    translated = await translator.translate(title, src='de', dest='es')
+    translated = await translator.translate(title, src='de', dest='en')
     return translated.text
 
 async def main():
