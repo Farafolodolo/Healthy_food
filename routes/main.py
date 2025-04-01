@@ -54,15 +54,20 @@ def clean_ingredient(ingredient):
 def index():
     return render_template('main_page.html')
 
+@main_bp.route('/test')
+def test():
+    return render_template('test.html')    
+
 @main_bp.route('/get_recipes')
 def get_recipes():
-    query = request.args.get('q', '')
+    query = request.args.get('q', default='Pasta')
     page = request.args.get('page', '0')
+    
     if not query:
         return jsonify({'error': 'Missing query parameter'}), 400
 
     url = "https://tasty.p.rapidapi.com/recipes/list"
-    params = {"q": query, "from": page, "size": "5"}
+    params = {"q": query, "from": page, "size": "8"}
     headers = {
         "X-RapidAPI-Key": config.RAPIDAPI_KEY,
         "X-RapidAPI-Host": config.RAPIDAPI_HOST
@@ -84,10 +89,12 @@ def get_recipes():
                             ingredients.append(clean_ing)
                 
                 recipes.append({
+                    'id': recipe.get('id'),
                     'name': recipe.get('name'),
                     'cook_time': recipe.get('cook_time_minutes'),
                     'servings': recipe.get('num_servings'),
                     'categories': [tag['name'] for tag in recipe.get('tags', [])],
+                    'image_url': recipe.get('thumbnail_url'),
                     'video_url': recipe.get('original_video_url'),
                     'ingredients': ingredients,
                     'instructions': [step['display_text'] for step in recipe.get('instructions', [])]
@@ -134,7 +141,7 @@ def search_products_amazon():
     
     clean_product = clean_ingredient(product)
     
-    url = f"https://api.mercadolibre.com/sites/MLM/search?q={clean_product}&category=MLM1403&limit=10"
+    url = f"https://api.mercadolibre.com/sites/MLM/search?q={clean_product}&category=MLM1403&limit=5"
     headers = {"Authorization": f"Bearer {config.ML_ACCESS_TOKEN}"}
     
     try:
@@ -162,3 +169,62 @@ def search_products_amazon():
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+@main_bp.route('/specific_recipe/<int:id>')
+def specific_recipe(id):
+    # Usar el endpoint adecuado para detalles de receta
+    url = "https://tasty.p.rapidapi.com/recipes/get-more-info"
+    
+    params = {
+        "id": id  # El parámetro correcto según la documentación de Tasty
+    }
+    
+    headers = {
+        "X-RapidAPI-Key": config.RAPIDAPI_KEY,
+        "X-RapidAPI-Host": config.RAPIDAPI_HOST
+    }
+
+    try:
+        response = requests.get(url, headers=headers, params=params)
+        
+        if response.status_code == 200:
+            recipe_data = response.json()  # Respuesta directa sin 'results'
+            
+            # Verificar si hay datos válidos
+            if not recipe_data.get('name'):
+                return render_template('recipe_not_found.html'), 404
+
+            # Procesar ingredientes (ajustado a nueva estructura)
+            ingredients = []
+            for section in recipe_data.get('sections', []):
+                for component in section.get('components', []):
+                    raw_ing = component.get('raw_text', '')
+                    clean_ing = clean_ingredient(raw_ing)
+                    if clean_ing:
+                        ingredients.append(clean_ing)
+
+            formatted_recipe = {
+                'id': recipe_data['id'],
+                'name': recipe_data['name'],
+                'cook_time': recipe_data.get('cook_time_minutes'),
+                'servings': recipe_data.get('num_servings'),
+                'categories': [tag['name'] for tag in recipe_data.get('tags', [])],
+                'image_url': recipe_data.get('thumbnail_url'),
+                'video_url': recipe_data.get('original_video_url'),
+                'ingredients': ingredients,
+                'instructions': [step['display_text'] for step in recipe_data.get('instructions', [])],
+                'yields': recipe_data.get('yields'),
+                'total_time': recipe_data.get('total_time_minutes'),
+                'user_ratings': recipe_data.get('user_ratings', {})
+            }
+            
+            return render_template('test.html', recipe=formatted_recipe)
+            
+        return render_template('recipe_not_found.html'), response.status_code
+        
+    except requests.exceptions.RequestException as e:
+        print(f"API Error: {str(e)}")
+        return render_template('api_error.html'), 500
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return render_template('error.html'), 500
