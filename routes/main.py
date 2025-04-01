@@ -54,6 +54,9 @@ def clean_ingredient(ingredient):
 def index():
     return render_template('main_page.html')
 
+@main_bp.route('/test')
+def test():
+    return render_template('test.html')
 @main_bp.route('/get_recipes')
 def get_recipes():
     query = request.args.get('q', '')

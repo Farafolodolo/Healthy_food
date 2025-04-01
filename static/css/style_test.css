@@ -85,6 +85,7 @@ nav {
     font-display: var(--font-style);
     font-variation-settings: var(--font-variation-settings);
     font-weight: 500;
+    background-color: none;
 }
 
 .card {
