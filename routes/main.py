@@ -13,6 +13,10 @@ translator = Translator()
 def index():
     return render_template('main_page.html')
 
+@main_bp.route('/test')
+def test():
+    return render_template('test.html')
+
 @main_bp.route('/search_ingredient')
 def search_products_amazon():
     PRODUCT = request.args.get('q', default='')

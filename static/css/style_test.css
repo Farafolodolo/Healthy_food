@@ -1,0 +1,92 @@
+:root {
+    --font-family: "Cabin", sans-serif;;
+    --font-optical-sizing: auto;
+    --font-style: normal;
+    --font-variation-settings: "wdth" 100;
+}
+
+* {
+    margin: 0;
+}
+
+html{
+    size: 100px;
+    background-color: rgb(255, 255, 255);
+    color: #ffffff;
+}
+
+body{
+    display: flex;
+    flex-direction: column;
+}
+
+/*Styles for the text
+P {
+    font-family: var(--font-family);
+    font-optical-sizing: var(--font-optical-sizing);
+    font-display: var(--font-style);
+    font-variation-settings: var(--font-variation-settings);
+}*/
+
+nav {
+    background-color: #304C89;
+}
+
+.navbar-brand {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    font-family: var(--font-family);
+    font-optical-sizing: var(--font-optical-sizing);
+    font-display: var(--font-style);
+    font-variation-settings: var(--font-variation-settings);
+    font-weight: 400;
+    letter-spacing: 1.2px;
+    margin-left: 0.8rem;
+}
+
+.costume_btn {
+    color: white;
+    font-weight: bold;
+    border: 2px solid #ffffff;
+    transition: all 0.3s ease;
+}
+
+.costume_btn:hover {
+    background-color: #2660dc;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.main {
+    padding: 40px 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 2rem;
+    gap: 5rem;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    width: 65rem;
+}
+
+.card-img-top {
+    height: 17rem; /* Ajusta la altura deseada */
+    object-fit: cover; /* La imagen se recortará para llenar el contenedor sin distorsión */
+    flex-shrink: 0;
+}
