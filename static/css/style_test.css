@@ -79,14 +79,51 @@ nav {
     gap: 5rem;
 }
 
+.btn {
+    font-family: var(--font-family);
+    font-optical-sizing: var(--font-optical-sizing);
+    font-display: var(--font-style);
+    font-variation-settings: var(--font-variation-settings);
+    font-weight: 500;
+}
+
 .card {
     display: flex;
     flex-direction: column;
-    width: 65rem;
+    width: 60rem;
+}
+
+.card-title {
+    font-family: var(--font-family);
+    font-optical-sizing: var(--font-optical-sizing);
+    font-display: var(--font-style);
+    font-variation-settings: var(--font-variation-settings);
+    font-weight: 600;
 }
 
 .card-img-top {
     height: 17rem; /* Ajusta la altura deseada */
     object-fit: cover; /* La imagen se recortará para llenar el contenedor sin distorsión */
     flex-shrink: 0;
+}
+
+.modal-header {
+    gap: 3rem;
+    margin-left: 5rem;
+    margin-right: 1rem;
+}
+
+.btn-header {
+    background-color: #2660dc;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    padding: 7px 15px;
+}
+
+.divider {
+    height: 50px;
+    width: 1.5px;
+    background-color: rgba(56, 56, 56, 0.3); /* Color con transparencia */
+    border-radius: 10px;
 }
