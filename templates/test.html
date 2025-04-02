@@ -18,17 +18,13 @@
                 <i class="fa-solid fa-apple-whole fa-lg"></i>
                 Healthy Food
             </a>
-            <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn costume_btn" type="submit">Search</button>
-            </form>
         </div>
     </nav>
 
     <main class="main">
         <section class="section container mt-4">
             <!-- Tarjeta Principal de la Receta -->
-            <div class="card mb-4 shadow">
+            <div class="card mb-4 shadow card-hover-main">
                 {% if recipe.video_url %}
                 <a href="{{ recipe.video_url }}" target="_blank">
                     <img src="{{ recipe.image_url }}" class="card-img-top recipe-main-img" alt="{{ recipe.name }}">
@@ -90,22 +86,24 @@
                     </div>
 
                     <!-- Ingredientes -->
-                    <div class="card mb-4">
+                    <div class="card mb-4 card-hover">
                         <div class="card-header bg-primary text-white">
                             <h3 class="mb-0">Ingredientes</h3>
                         </div>
                         <ul class="list-group list-group-flush">
                             {% for ingredient in recipe.ingredients %}
                             <li class="list-group-item d-flex align-items-center">
-                                <i class="fas fa-check-circle text-success me-2"></i>
-                                {{ ingredient }}
+                                <button type="button" class="btn me-md-2" data-bs-toggle="modal" data-bs-target="#SpecificModal">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    {{ ingredient }}
+                                </button>
                             </li>
                             {% endfor %}
                         </ul>
                     </div>
 
                     <!-- Instrucciones -->
-                    <div class="card mb-4">
+                    <div class="card mb-4 card-hover">
                         <div class="card-header bg-primary text-white">
                             <h3 class="mb-0">Instrucciones</h3>
                         </div>
@@ -114,16 +112,6 @@
                             <li class="list-group-item">{{ step }}</li>
                             {% endfor %}
                         </ol>
-                    </div>
-
-                    <!-- Botones Modals (Temporal) -->
-                    <div class="d-grid gap-2 d-md-block">
-                        <button type="button" class="btn btn-primary me-md-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <i class="fas fa-language me-2"></i>Ver en Inglés
-                        </button>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ejemploModal">
-                            <i class="fas fa-store me-2"></i>Buscar Ingredientes
-                        </button>
                     </div>
                 </div>
             </div>
@@ -135,6 +123,32 @@
 
             <div class="modal fade" id="ejemploModal" tabindex="-1" aria-labelledby="ejemploModalLabel" aria-hidden="true">
                 <!-- Contenido del modal español -->
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="SpecificModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button class="btn-header active" data-content="substitutes">
+                                Substitutes
+                            </button>
+                            <div class="divider"></div>
+                            <button class="btn-header" data-content="products">
+                                Buy Products
+                            </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="loading" class="text-center">
+                                <div class="spinner-border"></div>
+                            </div>
+                            <ul id="substitutesList" class="d-none"></ul>
+                            <ul id="productsList" class="d-none"></ul>
+                            <div id="errorMessage" class="alert alert-danger d-none"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
