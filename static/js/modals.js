@@ -66,7 +66,7 @@ async function showSubstitutes() {
                 <li class="list-group-item">${sub}</li>
             `).join('');
         } else {
-            substitutesList.innerHTML = `<li class="list-group-item text-muted">No se encontraron sustitutos para ${data.ingredient}</li>`;
+            substitutesList.innerHTML = `<li class="list-group-item text-muted">No substitutes were found for ${data.ingredient}</li>`;
         }
         
         substitutesList.classList.remove('d-none');
@@ -74,7 +74,7 @@ async function showSubstitutes() {
     } catch(error) {
         console.error("Error fetching substitutes:", error);
         // Mostrar mensaje amigable para el usuario
-        showError("No se pudieron cargar los sustitutos. Intente nuevamente.");
+        showError("The substitutes could not be loaded. Please try again.");
     }
 }
 
@@ -109,7 +109,7 @@ async function showProducts() {
                                     <span class="h5 text-success">${product.price}</span>
                                     ${product.originalPrice && product.originalPrice !== 'Not available' ? 
                                         `<small class="text-muted text-decoration-line-through ms-2">${product.originalPrice}</small>` : ''}
-                                ` : '<span class="text-muted">Consultar precio</span>'}
+                                ` : '<span class="text-muted">Consult price</span>'}
                             </div>
                             <div class="d-flex align-items-center gap-3 mb-2">
                                 ${product.rating ? `
@@ -125,21 +125,21 @@ async function showProducts() {
                                 ` : ''}
                             </div>
                             <a href="${product.link}" target="_blank" class="btn btn-sm btn-primary">
-                                <i class="fas fa-external-link-alt me-2"></i>Ver en Amazon
+                                <i class="fas fa-external-link-alt me-2"></i>View on Amazon
                             </a>
                         </div>
                     </div>
                 </li>
             `).join('');
         } else {
-            productsList.innerHTML = `<li class="list-group-item text-muted">No se encontraron productos para ${currentIngredient}</li>`;
+            productsList.innerHTML = `<li class="list-group-item text-muted">No products found for ${currentIngredient}</li>`;
         }
         
         productsList.classList.remove('d-none');
         hideLoading();
     } catch(error) {
         console.error("Error fetching products:", error);
-        showError(`Error al buscar productos: ${error.message}. Intente nuevamente más tarde.`);
+        showError(`Error when searching for products: ${error.message}. Try again later.`);
     }
 }
 
