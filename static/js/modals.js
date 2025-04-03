@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set up ingredient button listeners
     document.querySelectorAll('.ingredient-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
+            //It stores the ingredient on the variable if the button is clicked
             currentIngredient = e.currentTarget.getAttribute('data-ingredient');
             console.log("Selected ingredient:", currentIngredient);
         });
@@ -14,9 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set up modal header buttons
     document.querySelectorAll('.btn-header').forEach(btn => {
         btn.addEventListener('click', (e) => {
+            //It deletes the active on the headers
             document.querySelectorAll('.btn-header').forEach(b => b.classList.remove('active'));
+            //It adds the active only on the selected
             e.currentTarget.classList.add('active');
-            
+            //It will show de substitutes or the products
             if(e.currentTarget.dataset.content === 'substitutes') {
                 showSubstitutes();
             } else {
@@ -26,13 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Configurar eventos cuando el modal se muestra
+// When the modal loads, it resets the modal
 modal.addEventListener('show.bs.modal', () => {
     resetModal();
-    showSubstitutes(); // Mostrar sustitutos por defecto
+    showSubstitutes(); // It shows the substitutes 
 });
 
-// Funciones para manejar el contenido del modal
+// This part resets the modal and show the loader by classes
 function resetModal() {
     document.getElementById('substitutesList').classList.add('d-none');
     document.getElementById('productsList').classList.add('d-none');
@@ -48,28 +51,31 @@ function hideLoading() {
     document.getElementById('loading').classList.add('d-none');
 }
 
-// Función para mostrar sustitutos
+// Function to show the substitutes
 async function showSubstitutes() {
     try {
         resetModal();
         console.log("Fetching substitutes for:", currentIngredient);
+        //It calls the api
         const response = await fetch(`/get_substitutes?ingredient=${encodeURIComponent(currentIngredient)}`);
         const data = await response.json();
-        
+        //If there is an error, it will show the error
         if(data.error) throw new Error(data.error);
-        
+        //The container for the substitutes
         const substitutesList = document.getElementById('substitutesList');
         
-        // Manejar caso de sin sustitutos
+        // If there are results, it will show it
         if(data.substitutes && data.substitutes.length > 0) {
             substitutesList.innerHTML = data.substitutes.map(sub => `
                 <li class="list-group-item">${sub}</li>
             `).join('');
         } else {
+            //If there are not results, it will show an error
             substitutesList.innerHTML = `<li class="list-group-item text-muted">No substitutes were found for ${data.ingredient}</li>`;
         }
-        
+        //It will show the list
         substitutesList.classList.remove('d-none');
+        //It hides the loading
         hideLoading();
     } catch(error) {
         console.error("Error fetching substitutes:", error);
@@ -78,24 +84,26 @@ async function showSubstitutes() {
     }
 }
 
-// Función para mostrar productos
+// function for showing the products from the Amazon API
 async function showProducts() {
     try {
         resetModal();
         console.log("Fetching products for:", currentIngredient);
+        //It calls the API
         const response = await fetch(`/search_ingredient?q=${encodeURIComponent(currentIngredient)}`);
-        
+        //If the response are bad it will show an error
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+        //It converts the response
         const data = await response.json();
-        
+        //If the data has an error it shows the error
         if(data.error) throw new Error(data.error);
-        
+        //The container of the products
         const productsList = document.getElementById('productsList');
-        
+        //It stores all the information in a list
         if(data.results && data.results.length > 0) {
+            //It inserts the data with the function map
             productsList.innerHTML = data.results.map(product => `
                 <li class="list-group-item">
                     <div class="row align-items-center">
@@ -115,7 +123,7 @@ async function showProducts() {
                                 ${product.rating ? `
                                     <div class="small">
                                         <i class="fas fa-star text-warning"></i>
-                                        ${product.rating} (${product.totalRatings} valoraciones)
+                                        ${product.rating} (${product.totalRatings} valuations)
                                     </div>
                                 ` : ''}
                                 ${product.isPrime === 'true' ? `
@@ -132,9 +140,10 @@ async function showProducts() {
                 </li>
             `).join('');
         } else {
+            //If there is not a product (That would be weird), It shows an error
             productsList.innerHTML = `<li class="list-group-item text-muted">No products found for ${currentIngredient}</li>`;
         }
-        
+        //It shows the container
         productsList.classList.remove('d-none');
         hideLoading();
     } catch(error) {
@@ -143,7 +152,7 @@ async function showProducts() {
     }
 }
 
-// Función para mostrar errores
+// function to show the error from the tries and catches
 function showError(message) {
     const errorText = document.querySelector('.error-text');
     errorText.textContent = message;
